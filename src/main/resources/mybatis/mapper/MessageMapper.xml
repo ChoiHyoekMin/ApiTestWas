@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.model.dao.MessageMapper">
+    <select id="initMessages" resultType="com.example.demo.kafkachat.model.Message">
+        <!-- roomId sender content timestamp -->
+        SELECT ROOM_ID as roomID, CHAT_SENDER as sender, CHAT_CONTENT as content, CHAT_DATE as timestamp
+        FROM tb_chat WHERE ROOM_ID = #{roomId} ORDER BY CHAT_SEQ ASC
+    </select>
+
+    <insert id="createMessage">
+        INSERT INTO tb_chat (
+            ROOM_ID,
+            CHAT_SEQ,
+            CHAT_SENDER,
+            CHAT_CONTENT,
+            CHAT_DATE
+        ) SELECT
+            #{roomId},
+            MAX(CHAT_SEQ) + 1,
+            #{sender},
+            #{content},
+            NOW()
+            FROM tb_chat WHERE ROOM_ID = #{roomId}
+    </insert>
+</mapper>
